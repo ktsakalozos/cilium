@@ -744,6 +744,9 @@ func init() {
 	flags.StringSlice(option.HubbleMetrics, []string{}, "List of Hubble metrics to enable.")
 	option.BindEnv(option.HubbleMetrics)
 
+	flags.Bool(option.EnableIPv4FragmentsTrackingName, defaults.EnableIPv4FragmentsTracking, "Enable IPv4 fragments tracking for L4-based lookups")
+	option.BindEnv(option.EnableIPv4FragmentsTrackingName)
+
 	viper.BindPFlags(flags)
 }
 
