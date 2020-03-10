@@ -13,6 +13,13 @@ _test
 _build/
 hack/
 
+# This file itself should be ignored
+.dockerignore
+# Docker build should not be affect by Dockerfiles, as actual changes
+# in Dockerfile would either hit cache or miss it
+Dockerfile
+*.Dockerfile
+
 # Architecture specific extensions/prefixes
 *.cgo1.go
 *.cgo2.c
@@ -64,8 +71,6 @@ test/.vagrant
 # Emacs backup files
 *~
 
-# Automatically generated when needed
-.dockerignore
 
 # Temporary files that allow build containers/VMs work without git
 
