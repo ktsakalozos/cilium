@@ -25,7 +25,7 @@ RUN apt-get update \
 		apt-utils \
 		binutils \
 		ca-certificates \
-		clang-7 \
+		cmake \
 		coreutils \
 		curl \
 		gcc \
@@ -34,9 +34,9 @@ RUN apt-get update \
 		libc6-dev \
 		libc6-dev-i386 \
 		libelf-dev \
-		llvm-7 \
 		m4 \
 		make \
+		ninja-build \
 		pkg-config \
 		python \
 		rsync \
@@ -45,9 +45,22 @@ RUN apt-get update \
 		zip \
 		zlib1g-dev \
 	&& apt-get clean \
-	&& rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
-	&& update-alternatives --install /usr/bin/clang clang /usr/bin/clang-7 100 \
-	&& update-alternatives --install /usr/bin/llc llc /usr/bin/llc-7 100
+	&& rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+#
+# Install clang/llvm
+#
+RUN git clone --depth 1 -b master https://github.com/llvm/llvm-project.git llvm && \
+	mkdir -p llvm/llvm/build/install && \
+	cd llvm/ && \
+	git checkout -b d941df363d1cb621a3836b909c37d79f2a3e27e2 d941df363d1cb621a3836b909c37d79f2a3e27e2 && \
+	cd llvm/build && \
+	cmake .. -G "Ninja" -DLLVM_TARGETS_TO_BUILD="BPF" -DLLVM_ENABLE_PROJECTS="clang" -DBUILD_SHARED_LIBS=OFF -DCMAKE_BUILD_TYPE=Release -DLLVM_BUILD_RUNTIME=OFF && \
+	ninja && \
+	cp bin/clang /usr/bin/clang-git && \
+	cp bin/llc /usr/bin/llc-git && \
+	update-alternatives --install /usr/bin/clang clang /usr/bin/clang-git 100 && \
+	update-alternatives --install /usr/bin/llc llc /usr/bin/llc-git 100
 
 #
 # Install Go
