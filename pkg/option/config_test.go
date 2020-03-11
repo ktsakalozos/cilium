@@ -249,6 +249,15 @@ func (s *OptionSuite) TestLocalAddressExclusion(c *C) {
 	c.Assert(d.IsExcludedLocalAddress(net.ParseIP("f00d::2")), Equals, false)
 }
 
+func (s *OptionSuite) TestEndpointStatusIsEnabled(c *C) {
+
+	d := DaemonConfig{}
+	d.EndpointStatus = map[string]struct{}{EndpointStatusHealth: {}, EndpointStatusPolicy: {}}
+	c.Assert(d.EndpointStatusIsEnabled(EndpointStatusHealth), Equals, true)
+	c.Assert(d.EndpointStatusIsEnabled(EndpointStatusPolicy), Equals, true)
+	c.Assert(d.EndpointStatusIsEnabled(EndpointStatusLog), Equals, false)
+}
+
 func Test_populateNodePortRange(t *testing.T) {
 	type want struct {
 		wantMin int

@@ -776,6 +776,25 @@ const (
 
 	// HubbleMetrics specifies enabled metrics and their configuration options.
 	HubbleMetrics = "hubble-metrics"
+
+	// EndpointStatus enables population of information in the
+	// CiliumEndpoint.Status resource
+	EndpointStatus = "endpoint-status"
+
+	// EndpointStatusPolicy enables CiliumEndpoint.Status.Policy
+	EndpointStatusPolicy = "policy"
+
+	// EndpointStatusHealth enables CilliumEndpoint.Status.Health
+	EndpointStatusHealth = "health"
+
+	// EndpointStatusControllers enables CiliumEndpoint.Status.Controllers
+	EndpointStatusControllers = "controllers"
+
+	// EndpointStatusLog enables CiliumEndpoint.Status.Log
+	EndpointStatusLog = "log"
+
+	// EndpointStatusState enables CiliumEndpoint.Status.State
+	EndpointStatusState = "state"
 )
 
 // Default string arguments
@@ -1563,6 +1582,10 @@ type DaemonConfig struct {
 
 	// HubbleMetrics specifies enabled metrics and their configuration options.
 	HubbleMetrics []string
+
+	// EndpointStatus enables population of information in the
+	// CiliumEndpoint.Status resource
+	EndpointStatus map[string]struct{}
 }
 
 var (
@@ -1579,6 +1602,7 @@ var (
 		EnableIPv4:                   defaults.EnableIPv4,
 		EnableIPv6:                   defaults.EnableIPv6,
 		EnableL7Proxy:                defaults.EnableL7Proxy,
+		EndpointStatus:               make(map[string]struct{}),
 		ENITags:                      make(map[string]string),
 		ToFQDNsMaxIPsPerHost:         defaults.ToFQDNsMaxIPsPerHost,
 		KVstorePeriodicSync:          defaults.KVstorePeriodicSync,
@@ -1694,6 +1718,13 @@ func (c *DaemonConfig) TracingEnabled() bool {
 // IsFlannelMasterDeviceSet returns if the flannel master device is set.
 func (c *DaemonConfig) IsFlannelMasterDeviceSet() bool {
 	return len(c.FlannelMasterDevice) != 0
+}
+
+// EndpointStatusIsEnabled returns true if a particular EndpointStatus* feature
+// is enabled
+func (c *DaemonConfig) EndpointStatusIsEnabled(option string) bool {
+	_, ok := c.EndpointStatus[option]
+	return ok
 }
 
 func (c *DaemonConfig) validateIPv6ClusterAllocCIDR() error {
@@ -2162,6 +2193,10 @@ func (c *DaemonConfig) Populate() {
 		c.IPAMAPIBurst = val
 	} else {
 		c.IPAMAPIBurst = viper.GetInt(IPAMAPIBurst)
+	}
+
+	for _, option := range viper.GetStringSlice(EndpointStatus) {
+		c.EndpointStatus[option] = struct{}{}
 	}
 
 	if c.MonitorQueueSize == 0 {
