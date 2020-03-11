@@ -328,6 +328,8 @@ Deprecated options
   deprecated and will be removed in Cilium 1.9.
 * ``access-log``: L7 access logs have been available via Hubble since Cilium
   1.6. The ``access-log`` option to log to a file has been removed.
+* ``annotate-k8s-node``: Node annotations have been removed. The option no
+  longer has any effect and will be removed in 1.9.
 
 Renamed Metrics
 ~~~~~~~~~~~~~~~
